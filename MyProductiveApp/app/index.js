@@ -1,13 +1,14 @@
 import { Link } from 'expo-router';
-import { StyleSheet, Text,View, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image } from 'react-native';
 
 
 export default function Page() {
   return (
-    <SafeAreaView >
+    <SafeAreaView style={{flex : 1}}>
+
+
       <View style={styles.Acceuilbackground}>
-        <Link href="/login" style={styles.Pageslink}>Go to Login</Link>
-        <Link href="/accueil" style={styles.Pageslink}>Go to Accueil</Link>
+        <Link href="/TableauDeBord/TDB">Go to TDB</Link>
       </View>
     </SafeAreaView>
 
@@ -19,7 +20,7 @@ export default function Page() {
 
 const styles = StyleSheet.create({
   Acceuilbackground: {
-    backgroundColor: '#ccc',
+    backgroundColor: 'darkslategrey', //ou #042C28
     flex: 1,
   }
 
