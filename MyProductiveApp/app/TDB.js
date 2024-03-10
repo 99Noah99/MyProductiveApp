@@ -1,12 +1,11 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import Bouton from '../components/Bouton';
 
-const login = () => {
+export default function TDB() {
   return (
     <View>
       <Text>coucou</Text>
     </View>
   )
 }
-
-export default login
