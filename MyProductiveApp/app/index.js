@@ -17,7 +17,7 @@ export default function Accueil() {
         </View>
         
         <View style={styles.BtnPosition}>
-          <Link href="/TDB" asChild>
+          <Link href="/(TableauDeBord)/TDB" asChild> 
             <TouchableOpacity style={bouton_style.BoutonForme}>
               <Text style={bouton_style.BoutonTexte}>Aller au tableau de Bord</Text>
             </TouchableOpacity>
