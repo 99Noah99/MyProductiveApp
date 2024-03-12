@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from 'expo-router';
-import { StyleSheet, Text, View, SafeAreaView, Image } from 'react-native';
-import Bouton from '../components/Bouton';
+import { StyleSheet, Text, View, SafeAreaView, Image, TouchableOpacity } from 'react-native';
+// import Bouton from '../components/Bouton';
+import bouton_style from '../styles/bouton_style';
 
 
 export default function Accueil() {
@@ -15,10 +16,12 @@ export default function Accueil() {
           />
         </View>
         
-        <View>
-          <Link href="/TDB"> 
-            <Bouton texte='Aller au Tableau de Bord'/>
-          </Link>         
+        <View style={styles.BtnPosition}>
+          <Link href="/TDB" asChild>
+            <TouchableOpacity style={bouton_style.BoutonForme}>
+              <Text style={bouton_style.BoutonTexte}>Aller au tableau de Bord</Text>
+            </TouchableOpacity>
+          </Link>
         </View>
         
       </View>
@@ -40,8 +43,14 @@ const styles = StyleSheet.create({
   },
 
   ImageContaineur: {
-    flex: 1,
+    marginTop: 200,
     justifyContent: 'center', // Alignement horizontal centré
     alignItems: 'center', // Alignement vertical centré (optionnel)
   },
+
+  BtnPosition: {
+    flex: 1,
+    justifyContent: 'center', // Alignement horizontal centré
+    alignItems: 'center', // Alignement vertical centré (optionnel)
+  }
 });

@@ -7,9 +7,9 @@ export default function _layout() {
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: 'black',
+          backgroundColor: '#FFFAE4',
         },
-        headerTintColor: '#fff',
+        headerTintColor: 'black',
         flex: 1,  
         headerTitleStyle: {
           fontWeight: 'bold',
@@ -17,7 +17,7 @@ export default function _layout() {
       }}
     >
       <Stack.Screen name="index" options={{headerShown: false}}/>
-      <Stack.Screen name="TDB" options={{title:'Tableau de bord', headerBackVisible: true}}/>
+      <Stack.Screen name="TDB" options={{title:'Tableau de bord', headerBackVisible: true, headerTitleAlign: 'center'}}/>
     </Stack>
 
     

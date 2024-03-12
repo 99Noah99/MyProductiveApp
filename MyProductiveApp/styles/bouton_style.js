@@ -1,19 +1,7 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, {forwardRef} from 'react'
-
-const Bouton = forwardRef(({texte}, ref) => {
-    return (
-        <View style={styles.BoutonForme}>
-            <Text style={styles.BoutonTexte}>{texte}</Text>
-        </View>
-    );
-  });
+import { StyleSheet } from 'react-native'
 
 
-
-
-
-const styles = StyleSheet.create({
+const bouton_style = StyleSheet.create({
     BoutonTexte: {
         fontSize: 25,
      },
@@ -33,4 +21,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Bouton;
+export default bouton_style;
