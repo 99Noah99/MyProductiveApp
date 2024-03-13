@@ -39,17 +39,20 @@ const styles = StyleSheet.create({
   tinyLogo: {
     width: 350,
     height: 300,
-    borderRadius: 25,    
+    borderRadius: 25, 
+    borderWidth: 1,
+    borderColor: 'black',
   },
 
   ImageContaineur: {
-    marginTop: 200,
+    flex: 3,
     justifyContent: 'center', // Alignement horizontal centré
     alignItems: 'center', // Alignement vertical centré (optionnel)
   },
 
   BtnPosition: {
     flex: 1,
+    bottom: 100,
     justifyContent: 'center', // Alignement horizontal centré
     alignItems: 'center', // Alignement vertical centré (optionnel)
   }

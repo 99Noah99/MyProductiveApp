@@ -12,15 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::create('users', function (Blueprint $table) {
-            $table->id('Id_User');
-            $table->string('Prenom');
-            $table->string('Nom');
-            // $table->string('email')->unique();
-            // $table->timestamp('email_verified_at')->nullable();
-            $table->string('Identifiant');
-            $table->string('Password');
-            $table->rememberToken();
+        Schema::create('groupes', function (Blueprint $table) {
+            $table->id('Id_Groupe');
+            $table->string('Nom_Groupe');
+            $table->string('Description');
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('groupes');
     }
 };
