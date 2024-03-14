@@ -3,10 +3,12 @@ import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 
-export default function TDB() {
+const login = () => {
   return (
     <SafeAreaView>
-      <Text>coucou</Text>
+      <Text>register</Text>
     </SafeAreaView>
   )
 }
+
+export default login

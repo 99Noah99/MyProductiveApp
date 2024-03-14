@@ -33,6 +33,8 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $guarded = []; // Ne protège aucune colonne, permet le create
+
     protected $primaryKey = 'Id_User';
 
     /**

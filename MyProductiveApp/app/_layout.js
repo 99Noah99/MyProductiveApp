@@ -15,8 +15,10 @@ export default function _layout() {
         },    
       }}
     >
+
       <Stack.Screen name="index" options={{headerShown: false}}/>
       <Stack.Screen name="(TableauDeBord)" options={{headerShown: false}}/>
+      <Stack.Screen name="(Connexion)" options={{headerShown: false}}/>
 
     </Stack>
 

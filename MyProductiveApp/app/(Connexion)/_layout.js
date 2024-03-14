@@ -15,7 +15,8 @@ export default function _layout() {
         },    
       }}
     >
-        <Stack.Screen name="TDB" options={{title:'Tableau de bord', headerBackVisible: true, headerTitleAlign: 'center'}}/>
+      <Stack.Screen name="register" options={{title:'Créer un compte', headerBackVisible: true, headerTitleAlign: 'center'}}/>
+
     </Stack>
 
     
