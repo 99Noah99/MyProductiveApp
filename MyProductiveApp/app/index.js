@@ -8,9 +8,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  ScrollView,
 } from "react-native";
-// import Bouton from '../components/Bouton';
 import bouton_style from "../styles/bouton_style";
 
 export default function Accueil() {
