@@ -1,27 +1,26 @@
-import React from 'react'
-import {Stack, Tabs} from "expo-router"
+import React from "react";
+import { Stack } from "expo-router";
+import { AuthProvider } from "../context/AuthProvider";
 
 export default function _layout() {
-  return (
-    <Stack
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: '#FFFAE4',
-        },
-        headerTintColor: 'black',
-        flex: 1,  
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },    
-      }}
-    >
-
-      <Stack.Screen name="index" options={{headerShown: false}}/>
-      <Stack.Screen name="(TableauDeBord)" options={{headerShown: false}}/>
-      <Stack.Screen name="(Connexion)" options={{headerShown: false}}/>
-
-    </Stack>
-
-    
-  )
+	return (
+		<AuthProvider>
+			<Stack
+				screenOptions={{
+					headerStyle: {
+						backgroundColor: "#FFFAE4",
+					},
+					headerTintColor: "black",
+					flex: 1,
+					headerTitleStyle: {
+						fontWeight: "bold",
+					},
+				}}
+			>
+				<Stack.Screen name="index" options={{ headerShown: false }} />
+				<Stack.Screen name="(Protected)" options={{ headerShown: false }} />
+				<Stack.Screen name="(Connexion)" options={{ headerShown: false }} />
+			</Stack>
+		</AuthProvider>
+	);
 }
