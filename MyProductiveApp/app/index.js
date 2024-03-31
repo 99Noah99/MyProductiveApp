@@ -10,16 +10,17 @@ const index = () => {
 
 	useEffect(() => {
 		async function getValueFor() {
+			console.log("reload du index");
 			let resultUser = await SecureStore.getItemAsync("user");
 			let resultToken = await SecureStore.getItemAsync("token");
+			// console.log(resultUser && resultToken);
 			if (resultUser && resultToken) {
-				console.log("reload du index");
-				setUser(resultUser);
-				setToken(resultToken);
+				console.log("il trouver des user en storage");
+				setUser(JSON.parse(resultUser));
+				setToken(JSON.parse(resultToken));
 				setLoading(false);
 				router.replace("/(Protected)/TDB");
 			} else {
-				console.log("reload du index");
 				setLoading(false);
 				router.replace("/(Connexion)/login");
 			}

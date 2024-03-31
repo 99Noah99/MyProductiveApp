@@ -64,28 +64,36 @@ class UserController extends Controller
                 ];
         }
         else {
-            $user = User::where("Identifiant", $request->Identifiant)->first();
-
-            if($user && Hash::check($request->Password, $user->Password)){
-                $token = $user->createToken($request->deviceName)->plainTextToken;
-                return ['status' => true, 'user' => $user, 'token' => $token];
+            if(User::where("Identifiant", $request->Identifiant)->doesntExist()){
+                return [ 'status' => false, 'message_erreur' => "Ce compte n'existe pas"];
             }
-            else{
-                if(!$user && !Hash::check($request->Password, $user->Password)){
-                    return [ 'status' => false, 'message_erreur' => 'Identifiant et mot de passe incorrect'];
-                }
-                elseif(!$user){
-                    return [ 'status' => false, 'message_erreur' => 'Identifiant incorrect'];
+            else {
+                $user = User::where("Identifiant", $request->Identifiant)->first();
+
+                if($user && Hash::check($request->Password, $user->Password)){
+                    $token = $user->createToken($request->deviceName)->plainTextToken;
+                    return ['status' => true, 'user' => $user, 'token' => $token];
                 }
                 else{
-                    return [ 'status' => false, 'message_erreur' => 'Mot de passe incorrect'];
+                    if(!$user && !Hash::check($request->Password, $user->Password)){
+                        return [ 'status' => false, 'message_erreur' => 'Identifiant et mot de passe incorrect'];
+                    }
+                    elseif(!$user){
+                        return [ 'status' => false, 'message_erreur' => 'Identifiant incorrect'];
+                    }
+                    else{
+                        return [ 'status' => false, 'message_erreur' => 'Mot de passe incorrect'];
+                    }
                 }
-            } 
+            }
+ 
         }
     }
 
-    public function logout(){
-
+    public function logout(Request $request){
+        $user = $request->user();
+        $user->tokens()->delete();
+        return ["status" => true, 'message' => "suppression token réussi"];
     }
 
 }

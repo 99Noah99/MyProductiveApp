@@ -21,19 +21,17 @@ export const AuthProvider = ({ children }) => {
 		) {
 			router.replace("/(Protected)/TDB");
 		}
-		// const inAuthGroup = segments[0] === "(Connexion)";
-		// const isUndefined = segments[0] == undefined;
-		// if (!user && !inAuthGroup && isUndefined) {
-		// 	router.push("");
-		// } else {
-		// 	router.push("/TDB");
-		// }
-		console.log("reload");
+		console.log("reload du AuthProvider");
 	}, [user, segments]);
 
 	const varStorage = async (user, token) => {
-		await SecureStore.setItemAsync("user", user); //const userString = JSON.stringify(user);
-		await SecureStore.setItemAsync("token", token);
+		await SecureStore.setItemAsync("user", JSON.stringify(user));
+		await SecureStore.setItemAsync("token", JSON.stringify(token));
+	};
+
+	const varSuppressionStorage = async (user, token) => {
+		await SecureStore.deleteItemAsync("user");
+		await SecureStore.deleteItemAsync("token");
 	};
 
 	return (
@@ -46,12 +44,12 @@ export const AuthProvider = ({ children }) => {
 				token,
 				setToken,
 
-				register: (Nom, Prenom, Identifiant, Password, deviceName) => {
+				register: async (Nom, Prenom, Identifiant, Password, deviceName) => {
 					if (!Nom || !Prenom || !Identifiant || !Password) {
 						Alert.alert("Champs requis", "Veuillez remplir tous les champs");
 						return;
 					} else {
-						axios({
+						await axios({
 							method: "post",
 							url: `${API_URL}/api/register`,
 							data: {
@@ -63,22 +61,21 @@ export const AuthProvider = ({ children }) => {
 							},
 						})
 							.then((response) => {
-								console.log(response.data);
 								if (response.data.status == true) {
+									varStorage(response.data.user, response.data.token);
 									setUser(response.data.user);
 									setToken(response.data.token);
-									//varStorage(user, token);
 								} else {
-									// vérif du type de reponse pour affichage alert
+									// vérif si type de réponse est objet
 									if (
 										response.data.message_erreur !== null &&
 										typeof response.data.message_erreur === "object"
 									) {
-										console.log(typeof response.data.message_erreur);
 										let response_api = Object.values(
 											response.data.message_erreur
 										)[0][0];
 										Alert.alert("Erreur", response_api);
+										// type de la réponse autre (string)
 									} else {
 										console.log(typeof response.data.message_erreur);
 										Alert.alert("Erreur", response.data.message_erreur);
@@ -107,15 +104,16 @@ export const AuthProvider = ({ children }) => {
 						})
 							.then((response) => {
 								if (response.data.status == true) {
+									varStorage(response.data.user, response.data.token);
+									console.log(SecureStore.getItemAsync("user"));
 									setUser(response.data.user);
 									setToken(response.data.token);
-									//varStorage(user, token);
 								} else {
+									// vérif si type de réponse est objet
 									if (
 										response.data.message_erreur !== null &&
 										typeof response.data.message_erreur === "object"
 									) {
-										console.log(typeof response.data.message_erreur);
 										let response_api = Object.values(
 											response.data.message_erreur
 										)[0][0];
@@ -123,16 +121,37 @@ export const AuthProvider = ({ children }) => {
 									}
 									//Si c'est ce type string
 									else {
-										console.log(typeof response.data.message_erreur);
 										Alert.alert("Erreur", response.data.message_erreur);
 									}
 								}
 							})
 							.catch((error) => {
-								console.log("on arrive dans le catch de l'erreur");
 								console.log(error.response.data);
 							});
 					}
+				},
+
+				logout: async (user, token) => {
+					await axios({
+						method: "post",
+						url: `${API_URL}/api/logout`,
+						headers: { Authorization: `Bearer ${token}` },
+						data: {
+							user: user,
+						},
+					})
+						.then((response) => {
+							if (response.data.status == true) {
+								varSuppressionStorage();
+								setUser(null);
+								setToken(null);
+								console.log(response.data);
+							}
+						})
+						.catch((error) => {
+							console.log("du catch error");
+							console.log(error.response.data);
+						});
 				},
 			}}
 		>
