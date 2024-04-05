@@ -10,13 +10,14 @@ import {
 	TextInput,
 } from "react-native";
 import React, { useContext, useState } from "react";
+import { Dropdown } from "react-native-element-dropdown";
+import CreateTache from "../../components/CreateTache";
 import { TacheContext } from "../../context/TacheProvider";
 
 const TDB = () => {
 	const { ModalVisible, setModalVisible } = useContext(TacheContext);
 	const [tacheActive, setTacheActive] = useState(true);
 	const [groupeActive, setGroupeActive] = useState(false);
-	const [TacheIntitule, setTacheIntitule] = useState("");
 
 	const tacheContainer = () => {
 		setTacheActive(true);
@@ -78,14 +79,7 @@ const TDB = () => {
 									</View>
 								</View>
 
-								{tacheActive && (
-									<TextInput
-										style={styles.Input}
-										onChangeText={setTacheIntitule}
-										value={TacheIntitule}
-										placeholder="Votre tache"
-									/>
-								)}
+								{tacheActive && <CreateTache />}
 
 								{groupeActive && (
 									<View>
@@ -112,9 +106,11 @@ const styles = StyleSheet.create({
 	},
 
 	Modal_contenu: {
+		flexDirection: "column",
+		alignItems: "flex-start",
 		backgroundColor: "white",
 		width: 330,
-		height: 450,
+		height: 380,
 		borderRadius: 15,
 		alignItems: "center",
 	},
