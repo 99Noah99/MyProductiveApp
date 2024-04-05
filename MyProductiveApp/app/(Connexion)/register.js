@@ -23,42 +23,6 @@ const register = () => {
 	const { register } = useContext(AuthContext); //récupération fonction register du context AuthContext créé dans le fichier AuthProvider.js
 	let deviceName = Device.deviceName;
 
-	const formPost = async () => {
-		if (!Nom || !Prenom || !Identifiant || !Password) {
-			Alert.alert("Champs requis", "Veuillez remplir tous les champs");
-			return;
-		} else {
-			await axios({
-				method: "post",
-				url: `${API_URL}/api/register`,
-				data: {
-					Nom: Nom,
-					Prenom: Prenom,
-					Identifiant: Identifiant,
-					Password: Password,
-				},
-			})
-				.then((response) => {
-					if (response.data.status == true) {
-						router.push("../(Protected)/TDB");
-					} else {
-						let response_api = Object.values(
-							response.data.message_erreur
-						)[0][0];
-						Alert.alert("Erreur", response_api);
-					}
-				})
-				.catch((error) => {
-					console.log("login catch error");
-					console.log(error);
-					// Erreur de réponse du serveur
-					// console.log(error.response.data);
-					// console.log(error.response.status);
-					// console.log(error.response.headers);
-				});
-		}
-	};
-
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<View style={styles.InputPosition}>

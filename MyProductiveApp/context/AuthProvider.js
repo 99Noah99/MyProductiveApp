@@ -93,6 +93,7 @@ export const AuthProvider = ({ children }) => {
 						Alert.alert("Champs requis", "Veuillez remplir tous les champs");
 						return;
 					} else {
+						setLoading(true);
 						await axios({
 							method: "post",
 							url: `${API_URL}/api/login`,
@@ -103,6 +104,7 @@ export const AuthProvider = ({ children }) => {
 							},
 						})
 							.then((response) => {
+								setLoading(false);
 								if (response.data.status == true) {
 									varStorage(response.data.user, response.data.token);
 									console.log(SecureStore.getItemAsync("user"));
@@ -126,6 +128,8 @@ export const AuthProvider = ({ children }) => {
 								}
 							})
 							.catch((error) => {
+								setLoading(false);
+								console.log(error);
 								console.log(error.response.data);
 							});
 					}
@@ -149,6 +153,7 @@ export const AuthProvider = ({ children }) => {
 							}
 						})
 						.catch((error) => {
+							console.log(error);
 							console.log("du catch error");
 							console.log(error.response.data);
 						});

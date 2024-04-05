@@ -1,13 +1,10 @@
-import React, { useState, useContext } from "react";
-import { Link } from "expo-router";
+import React, { useContext } from "react";
 import {
 	StyleSheet,
 	Text,
 	View,
 	SafeAreaView,
-	Image,
 	TouchableOpacity,
-	TextInput,
 } from "react-native";
 import bouton_style from "../../styles/bouton_style";
 import { AuthContext } from "../../context/AuthProvider";
@@ -30,7 +27,6 @@ const parametre = () => {
 
 const styles = StyleSheet.create({
 	AccueilParam: {
-		backgroundColor: "white", //ou #042C28
 		flex: 1,
 	},
 

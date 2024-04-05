@@ -8,6 +8,7 @@ import {
 	Image,
 	TouchableOpacity,
 	TextInput,
+	ActivityIndicator,
 } from "react-native";
 import bouton_style from "../../styles/bouton_style";
 import * as Device from "expo-device";
@@ -16,7 +17,7 @@ import { AuthContext } from "../../context/AuthProvider";
 export default function Login() {
 	const [Identifiant, setIdentifiant] = useState("");
 	const [Password, setPassword] = useState("");
-	const { login } = useContext(AuthContext);
+	const { login, loading } = useContext(AuthContext);
 	let deviceName = Device.deviceName;
 
 	return (
@@ -51,7 +52,10 @@ export default function Login() {
 					style={bouton_style.BoutonForme}
 					onPress={() => login(Identifiant, Password, deviceName)}
 				>
-					<Text style={bouton_style.BoutonTexte}>Se connecter</Text>
+					<Text style={bouton_style.BoutonTexte}>
+						Se connecter
+						{loading && <ActivityIndicator />}
+					</Text>
 				</TouchableOpacity>
 
 				<Link href="/(Connexion)/register" asChild>
