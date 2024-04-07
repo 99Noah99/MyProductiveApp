@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('Intitule');
             $table->string('Statut');
             $table->dateTime('Date_ajout', $precision = 0);
-            $table->foreignId('Id_User')->foreign()->references('Id_User')->on('User');
-            $table->foreignId('Id_Groupe')->foreign()->references('Id_Groupe')->on('Groupe');
+            $table->foreignId('Id_User')->foreign()->references('Id_User')->on('users');
+            $table->foreignId('Id_Groupe')->foreign()->nullable()->references('Id_Groupe')->on('groupes'); 
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();

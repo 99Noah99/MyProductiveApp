@@ -107,7 +107,6 @@ export const AuthProvider = ({ children }) => {
 								setLoading(false);
 								if (response.data.status == true) {
 									varStorage(response.data.user, response.data.token);
-									console.log(SecureStore.getItemAsync("user"));
 									setUser(response.data.user);
 									setToken(response.data.token);
 								} else {

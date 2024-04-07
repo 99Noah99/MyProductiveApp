@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id('Id_Groupe');
             $table->string('Nom_Groupe');
             $table->string('Description');
+            $table->foreignId('Id_User')->foreign()->references('Id_User')->on('users');
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();

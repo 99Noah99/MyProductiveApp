@@ -46,7 +46,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function Tache(){        
-        return $this->hasMany(Tache::class, 'Id_User', 'Id_User');
+    public function Taches(){        
+        return $this->hasMany(Taches::class, 'Id_User', 'Id_User');
+    }
+
+    public function Groupes(){        
+        return $this->hasMany(Groupes::class, 'Id_User', 'Id_User');
     }
 }

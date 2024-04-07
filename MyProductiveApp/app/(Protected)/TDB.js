@@ -7,10 +7,8 @@ import {
 	TouchableWithoutFeedback,
 	TouchableOpacity,
 	ImageBackground,
-	TextInput,
 } from "react-native";
 import React, { useContext, useState } from "react";
-import { Dropdown } from "react-native-element-dropdown";
 import CreateTache from "../../components/CreateTache";
 import { TacheContext } from "../../context/TacheProvider";
 
@@ -54,6 +52,7 @@ const TDB = () => {
 								>
 									<Text style={styles.Modal_header_text}>Créer</Text>
 								</ImageBackground>
+
 								<View style={styles.container_choix}>
 									<View style={styles.buttonChoixContainer}>
 										<TouchableOpacity
@@ -171,7 +170,7 @@ const styles = StyleSheet.create({
 
 	button_choix_active: {
 		elevation: 5,
-		backgroundColor: "#E9E9E9",
+		backgroundColor: "#FFE3C6",
 	},
 
 	Input: {
