@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group( function () {
     Route::post('/logout', [UserController::class, 'logout']);
     Route::post('/getGroupes', [TacheController::class, 'getGroupes']);
+    Route::post('/getTaches', [TacheController::class, 'getTaches']);
+    Route::post('/createTache', [TacheController::class, 'createTache']);
 
 });
 

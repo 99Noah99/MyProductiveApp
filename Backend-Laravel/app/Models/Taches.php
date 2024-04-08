@@ -12,6 +12,8 @@ class Taches extends Model
     protected $table = 'Taches';
     protected $primaryKey = 'Id_Tache';
 
+    protected $guarded = []; // Ne protège aucune colonne, permet le create
+
     public function User(){        
         return $this->belongsTo(User::class, 'Id_User', 'Id_User');
     }

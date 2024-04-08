@@ -5,6 +5,7 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 	ActivityIndicator,
+	Alert,
 } from "react-native";
 import React, { useState, useContext, useEffect } from "react";
 import { Dropdown } from "react-native-element-dropdown";
@@ -13,15 +14,18 @@ import { TacheContext } from "../context/TacheProvider";
 import { API_URL } from "@env";
 import axios from "axios";
 
-//Import function request api
-// import { getGroupes } from "../fonction/Tache_function";
-
 const CreateTache = () => {
 	const { setModalVisible } = useContext(TacheContext);
 	const [TacheIntitule, setTacheIntitule] = useState("");
 	const [DataGroupe, setDataGroupe] = useState([
-		{ Nom_Groupe: "ne pas attribuer", Id_Groupe: 0 },
-	]);
+		{ Nom_Groupe: "ne pas attribuer", Id_Groupe: -1 },
+	]); // Contient tout les groupes de l'utilisateur
+	const data = [
+		{ label: "URGENT", value: "urgent" },
+		{ label: "important", value: "important" },
+		{ label: "moyen", value: "moyen" },
+		{ label: "faible", value: "faible" },
+	];
 	const [statut, setStatut] = useState(null);
 	const [groupe, setGroupe] = useState(null);
 	const { user, token } = useContext(AuthContext);
@@ -38,7 +42,10 @@ const CreateTache = () => {
 			})
 				.then((response) => {
 					if (response.data.status == true) {
-						console.log("le resulte response", response.data.groupes);
+						console.log(
+							"response du getGroupe dropdown",
+							response.data.groupes
+						);
 						setDataGroupe((prevDataGroupe) => [
 							...prevDataGroupe, // Copie des données existantes
 							...response.data.groupes, // Ajout des nouvelles données à la fin
@@ -46,19 +53,64 @@ const CreateTache = () => {
 					}
 				})
 				.catch((error) => {
+					console.log(
+						"response du catch error du getGroupe Dropdown",
+						response
+					);
 					console.log(error);
-					console.log("du catch error");
+					console.log("catch error du getGroupe Dropdown");
 				});
 		}
 		getGroupes(user, token);
 	}, []);
 
-	const data = [
-		{ label: "URGENT", value: "urgent" },
-		{ label: "important", value: "important" },
-		{ label: "moyen", value: "moyen" },
-		{ label: "faible", value: "faible" },
-	];
+	async function createTache(user, token, TacheIntitule, statut, groupe) {
+		console.log("tache intitule : ", TacheIntitule);
+		console.log("statut : ", statut);
+		console.log("groupe : ", groupe);
+		console.log(!groupe);
+		if (!TacheIntitule || !statut || !groupe) {
+			Alert.alert("Champs requis", "Veuillez remplir tous les champs");
+			return;
+		} else {
+			await axios({
+				method: "post",
+				url: `${API_URL}/api/createTache`,
+				headers: { Authorization: `Bearer ${token}` },
+				data: {
+					user: user,
+					TacheIntitule: TacheIntitule,
+					statut: statut,
+					groupe: groupe,
+				},
+			})
+				.then((response) => {
+					if (response.data.status == true) {
+						console.log(response.data);
+						setModalVisible(false);
+					} else {
+						// vérif si type de réponse est objet
+						if (
+							response.data.message_erreur !== null &&
+							typeof response.data.message_erreur === "object"
+						) {
+							let response_api = Object.values(
+								response.data.message_erreur
+							)[0][0];
+							Alert.alert("Erreur", response_api);
+						}
+						//Si c'est ce type string
+						else {
+							Alert.alert("Erreur", response.data.message_erreur);
+						}
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+					console.log("du catch error du createTache ");
+				});
+		}
+	}
 
 	return (
 		<View style={styles.containeur}>
@@ -105,7 +157,7 @@ const CreateTache = () => {
 						placeholder="attribuer à un groupe"
 						value={groupe}
 						onChange={(item) => {
-							setGroupe(item.value);
+							setGroupe(item.Id_Groupe);
 						}}
 					/>
 				)}
@@ -119,7 +171,12 @@ const CreateTache = () => {
 					<Text style={styles.bouton_text}>Annuler</Text>
 				</TouchableOpacity>
 
-				<TouchableOpacity style={styles.bouton}>
+				<TouchableOpacity
+					style={styles.bouton}
+					onPress={() =>
+						createTache(user, token, TacheIntitule, statut, groupe)
+					}
+				>
 					<Text style={styles.bouton_text}>Ajouter</Text>
 				</TouchableOpacity>
 			</View>

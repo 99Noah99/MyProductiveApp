@@ -19,9 +19,20 @@ export default function _layout() {
 					}}
 				/>
 				<Tabs.Screen
+					name="TacheNonAttribuer"
+					options={{
+						title: "Tâche à attribuer",
+						headerTitleAlign: "center",
+						tabBarIcon: ({ color }) => (
+							<Entypo name="list" size={24} color={color} />
+						),
+					}}
+				/>
+				<Tabs.Screen
 					name="parametre"
 					options={{
 						title: "Paramètres",
+						headerTitleAlign: "center",
 						tabBarIcon: ({ color }) => (
 							<Feather name="settings" size={24} color={color} />
 						),

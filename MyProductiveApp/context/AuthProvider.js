@@ -152,9 +152,9 @@ export const AuthProvider = ({ children }) => {
 							}
 						})
 						.catch((error) => {
+							console.log(response);
 							console.log(error);
-							console.log("du catch error");
-							console.log(error.response.data);
+							console.log("du catch error logout");
 						});
 				},
 			}}
