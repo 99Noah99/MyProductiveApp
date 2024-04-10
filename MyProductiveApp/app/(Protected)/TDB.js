@@ -7,15 +7,30 @@ import {
 	TouchableWithoutFeedback,
 	TouchableOpacity,
 	ImageBackground,
+	FlatList,
+	ActivityIndicator,
 } from "react-native";
 import React, { useContext, useState } from "react";
+import { useFocusEffect } from "expo-router";
+
+//Ajout de composant externe
 import CreateTache from "../../components/CreateTache";
+import CreateGroupe from "../../components/CreateGroupe";
+
+// Import des contextes
 import { TacheContext } from "../../context/TacheProvider";
+import { AuthContext } from "../../context/AuthProvider";
+
+//Import outils requetes
+import { API_URL } from "@env";
+import axios from "axios";
 
 const TDB = () => {
 	const { ModalVisible, setModalVisible } = useContext(TacheContext);
 	const [tacheActive, setTacheActive] = useState(true);
 	const [groupeActive, setGroupeActive] = useState(false);
+	const [DataGroupe, setDataGroupe] = useState(null);
+	const { user, token } = useContext(AuthContext);
 
 	const tacheContainer = () => {
 		setTacheActive(true);
@@ -26,6 +41,49 @@ const TDB = () => {
 		setGroupeActive(true);
 		setTacheActive(false);
 	};
+
+	const renderItem = ({ item }) => (
+		<View style={styles_items.containeur}>
+			<ImageBackground
+				source={require("../../assets/images/modal_header1.jpg")}
+				style={styles_items.image}
+			>
+				<Text style={styles_items.text_nom_groupe}>{item.Nom_Groupe}</Text>
+			</ImageBackground>
+			<Text style={styles_items.text_description}>{item.Description}</Text>
+		</View>
+	);
+
+	const keyExtractor = (item) => item.Id_Groupe.toString();
+
+	async function getGroupes(user, token) {
+		await axios({
+			method: "post",
+			url: `${API_URL}/api/getGroupes`,
+			headers: { Authorization: `Bearer ${token}` },
+			data: {
+				user: user,
+			},
+		})
+			.then((response) => {
+				if (response.data.status == true) {
+					// console.log("response du getGroupe TDB", response.data.groupes);
+					setDataGroupe(response.data.groupes);
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				console.log("erreur en JSON", error.toJSON());
+				console.log("catch error du getGroupe Dropdown page TDB");
+			});
+	}
+
+	//Execute fonction getGroupes à chaque ouverture de la page
+	useFocusEffect(
+		React.useCallback(() => {
+			getGroupes(user, token);
+		}, [])
+	);
 
 	return (
 		<SafeAreaView>
@@ -80,16 +138,34 @@ const TDB = () => {
 
 								{tacheActive && <CreateTache />}
 
-								{groupeActive && (
-									<View>
-										<Text>Groupe Container</Text>
-									</View>
-								)}
+								{groupeActive && <CreateGroupe getGroupes={getGroupes} />}
 							</View>
 						</TouchableWithoutFeedback>
 					</View>
 				</TouchableWithoutFeedback>
 			</Modal>
+			{DataGroupe == null ? (
+				<ActivityIndicator size="large" color="black" />
+			) : (
+				<FlatList
+					data={DataGroupe}
+					renderItem={renderItem}
+					keyExtractor={keyExtractor}
+					numColumns={2}
+					// columnWrapperStyle={styles_items.colonne_flatlist}
+					ListEmptyComponent={
+						<View
+							style={{
+								flex: 1,
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<Text>Aucun groupe à afficher</Text>
+						</View>
+					}
+				/>
+			)}
 		</SafeAreaView>
 	);
 };
@@ -102,6 +178,7 @@ const styles = StyleSheet.create({
 		flexDirection: "column",
 		justifyContent: "center",
 		alignItems: "center",
+		backgroundColor: "rgba(255, 255, 255, 0.6)", // blanc avec 50% d'opacité
 	},
 
 	Modal_contenu: {
@@ -180,5 +257,40 @@ const styles = StyleSheet.create({
 		borderWidth: 0.5,
 		borderRadius: 10,
 		padding: 10,
+	},
+});
+
+const styles_items = StyleSheet.create({
+	containeur: {
+		flex: 1,
+		backgroundColor: "white",
+		width: "45%",
+		margin: 10,
+		aspectRatio: 1,
+		borderBlockColor: "black",
+		borderWidth: 0.4,
+		borderRadius: 10,
+		elevation: 5,
+	},
+
+	image: {
+		padding: 10,
+		borderTopLeftRadius: 10,
+		borderTopRightRadius: 10,
+		overflow: "hidden",
+		resizeMode: "repeat",
+		height: 45,
+		justifyContent: "center",
+	},
+
+	text_nom_groupe: {
+		fontSize: 20,
+		fontWeight: "bold",
+		color: "white",
+	},
+
+	text_description: {
+		marginTop: 10,
+		textAlign: "center",
 	},
 });

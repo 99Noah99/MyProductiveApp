@@ -18,7 +18,7 @@ const CreateTache = () => {
 	const { setModalVisible } = useContext(TacheContext);
 	const [TacheIntitule, setTacheIntitule] = useState("");
 	const [DataGroupe, setDataGroupe] = useState([
-		{ Nom_Groupe: "ne pas attribuer", Id_Groupe: -1 },
+		{ Nom_Groupe: "Ne pas attribuer", Id_Groupe: -1 },
 	]); // Contient tout les groupes de l'utilisateur
 	const data = [
 		{ label: "URGENT", value: "urgent" },
@@ -53,10 +53,6 @@ const CreateTache = () => {
 					}
 				})
 				.catch((error) => {
-					console.log(
-						"response du catch error du getGroupe Dropdown",
-						response
-					);
 					console.log(error);
 					console.log("catch error du getGroupe Dropdown");
 				});

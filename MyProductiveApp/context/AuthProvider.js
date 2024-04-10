@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
 	const segments = useSegments();
 
 	useEffect(() => {
+		console.log(token);
 		if (!user && segments[0] === "(Protected)") {
 			router.push("");
 		} else if (
@@ -84,6 +85,7 @@ export const AuthProvider = ({ children }) => {
 							})
 							.catch((error) => {
 								console.log(error);
+								console.log("erreur en JSON", error.toJSON());
 							});
 					}
 				},
@@ -128,8 +130,9 @@ export const AuthProvider = ({ children }) => {
 							})
 							.catch((error) => {
 								setLoading(false);
+								console.log("catch du login");
+								console.log("erreur en JSON", error.toJSON());
 								console.log(error);
-								console.log(error.response.data);
 							});
 					}
 				},
@@ -152,8 +155,8 @@ export const AuthProvider = ({ children }) => {
 							}
 						})
 						.catch((error) => {
-							console.log(response);
 							console.log(error);
+							console.log("erreur en JSON", error.toJSON());
 							console.log("du catch error logout");
 						});
 				},

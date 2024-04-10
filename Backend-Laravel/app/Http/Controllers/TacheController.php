@@ -64,4 +64,30 @@ class TacheController extends Controller
         }
     }
 
+
+    public function createGroupe(Request $request){
+        $validator = Validator::make($request->all(), [
+            'Nom_Groupe' => 'required|string',
+            'Description' => 'required|string',          
+        ],
+        [
+            'Nom_Groupe.required' => "Le nom du groupe est requis !",
+            'Description.required' => "La Description du groupe est requise !",
+        ]);
+
+        if ($validator->fails()) {
+            return ['message_erreur' => $validator->messages(), 
+                    'status' => false
+                ];
+        }
+        else{
+            Groupes::create([
+                "Nom_Groupe" => $request->Nom_Groupe,
+                "Description" => $request->Description,
+                "Id_User" => $request->user['Id_User'],
+            ]);
+            return ['status' => true];   
+        }
+    }
+
 }

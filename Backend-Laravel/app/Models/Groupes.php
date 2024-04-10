@@ -12,6 +12,8 @@ class Groupes extends Model
     protected $table = 'Groupes';
     protected $primaryKey = 'Id_Groupe';
 
+    protected $guarded = []; // Ne protège aucune colonne, permet le create
+
     public function Taches(){        
         return $this->hasMany(Taches::class, 'Id_Groupe', 'Id_Groupe');
     }
