@@ -6,8 +6,8 @@ import {
 	SafeAreaView,
 	TouchableOpacity,
 } from "react-native";
-import bouton_style from "../../styles/bouton_style";
-import { AuthContext } from "../../context/AuthProvider";
+import bouton_style from "../../../styles/bouton_style";
+import { AuthContext } from "../../../context/AuthProvider";
 
 const parametre = () => {
 	const { user, token, logout } = useContext(AuthContext);

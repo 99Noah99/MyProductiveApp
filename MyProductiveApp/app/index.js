@@ -19,7 +19,7 @@ const index = () => {
 				setUser(JSON.parse(resultUser));
 				setToken(JSON.parse(resultToken));
 				setLoading(false);
-				router.replace("/(Protected)/TDB");
+				router.replace("/(Protected)/(TabView)/TDB");
 			} else {
 				setLoading(false);
 				router.replace("/(Connexion)/login");

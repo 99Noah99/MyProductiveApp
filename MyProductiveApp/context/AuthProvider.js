@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 			user &&
 			(segments[0] == undefined || segments[0] === "(Connexion)")
 		) {
-			router.replace("/(Protected)/TDB");
+			router.replace("/(Protected)/(TabView)/TDB");
 		}
 		console.log("reload du AuthProvider");
 	}, [user, segments]);

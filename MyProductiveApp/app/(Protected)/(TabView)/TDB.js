@@ -10,17 +10,18 @@ import {
 	FlatList,
 	ActivityIndicator,
 	Dimensions,
+	Pressable,
 } from "react-native";
 import React, { useContext, useState } from "react";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, router } from "expo-router";
 
 //Ajout de composant externe
-import CreateTache from "../../components/CreateTache";
-import CreateGroupe from "../../components/CreateGroupe";
+import CreateTache from "../../../components/CreateTache";
+import CreateGroupe from "../../../components/CreateGroupe";
 
 // Import des contextes
-import { TacheContext } from "../../context/TacheProvider";
-import { AuthContext } from "../../context/AuthProvider";
+import { TacheContext } from "../../../context/TacheProvider";
+import { AuthContext } from "../../../context/AuthProvider";
 
 //Import outils requetes
 import { API_URL } from "@env";
@@ -28,12 +29,12 @@ import axios from "axios";
 
 const TDB = () => {
 	const { ModalVisible, setModalVisible } = useContext(TacheContext);
+	const { user, token } = useContext(AuthContext);
 	const [tacheActive, setTacheActive] = useState(true);
 	const [groupeActive, setGroupeActive] = useState(false);
 	const [DataGroupe, setDataGroupe] = useState(null);
 	const screenWidth = Dimensions.get("window").width;
 	const squareSize = (screenWidth - 10) / 2 - 10;
-	const { user, token } = useContext(AuthContext);
 
 	const tacheContainer = () => {
 		setTacheActive(true);
@@ -46,23 +47,34 @@ const TDB = () => {
 	};
 
 	const renderItem = ({ item }) => (
-		<View
-			style={StyleSheet.compose(styles_items.containeur, {
-				width: squareSize,
-				height: squareSize,
-			})}
+		<Pressable
+			onPress={() =>
+				router.push({
+					pathname: "../TacheFromGroup",
+					params: {
+						Id_Groupe: item.Id_Groupe,
+					},
+				})
+			}
 		>
-			<ImageBackground
-				source={require("../../assets/images/modal_header4.jpg")}
-				style={styles_items.image}
+			<View
+				style={StyleSheet.compose(styles_items.containeur, {
+					width: squareSize,
+					height: squareSize,
+				})}
 			>
-				<Text style={styles_items.text_nom_groupe}>{item.Nom_Groupe}</Text>
-			</ImageBackground>
-			<Text style={styles_items.text_description}>{item.Description}</Text>
-			<Text style={styles_items.text_nb}>
-				Nombre de tâches :{item.nombre_taches}
-			</Text>
-		</View>
+				<ImageBackground
+					source={require("../../../assets/images/modal_header4.jpg")}
+					style={styles_items.image}
+				>
+					<Text style={styles_items.text_nom_groupe}>{item.Nom_Groupe}</Text>
+				</ImageBackground>
+				<Text style={styles_items.text_description}>{item.Description}</Text>
+				<Text style={styles_items.text_nb}>
+					Nombre de tâches :{item.nombre_taches}
+				</Text>
+			</View>
+		</Pressable>
 	);
 
 	const keyExtractor = (item) => item.Id_Groupe.toString();
@@ -116,7 +128,7 @@ const TDB = () => {
 								]}
 							>
 								<ImageBackground
-									source={require("../../assets/images/modal_header2.jpg")}
+									source={require("../../../assets/images/modal_header2.jpg")}
 									style={styles.Modal_header}
 								>
 									<Text style={styles.Modal_header_text}>Créer</Text>

@@ -7,18 +7,19 @@ import {
 	ActivityIndicator,
 } from "react-native";
 import React, { useState, useContext } from "react";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { AuthContext } from "../../context/AuthProvider";
 import { API_URL } from "@env";
 import axios from "axios";
 
-const TacheNonAttribuer = () => {
+const TacheFromGroup = () => {
 	const { user, token } = useContext(AuthContext);
+	const { Id_Groupe } = useLocalSearchParams();
 	const [DataTache, setDataTache] = useState(null);
 
 	useFocusEffect(
 		React.useCallback(() => {
-			async function getTaches(user, token) {
+			async function getTaches(user, token, Id_Groupe) {
 				console.log("ip :", API_URL);
 				await axios({
 					method: "post",
@@ -26,6 +27,7 @@ const TacheNonAttribuer = () => {
 					headers: { Authorization: `Bearer ${token}` },
 					data: {
 						user: user,
+						Id_Groupe: Id_Groupe,
 					},
 				})
 					.then((response) => {
@@ -40,8 +42,7 @@ const TacheNonAttribuer = () => {
 						console.log("catch error du getTaches");
 					});
 			}
-			getTaches(user, token);
-			console.log("chargement des taches");
+			getTaches(user, token, Id_Groupe);
 		}, [])
 	);
 
@@ -88,7 +89,7 @@ const TacheNonAttribuer = () => {
 	const keyExtractor = (item) => item.Id_Tache.toString();
 
 	return (
-		<SafeAreaView>
+		<SafeAreaView style={{ flex: 1 }}>
 			{DataTache == null ? (
 				<ActivityIndicator size="large" color="black" />
 			) : (
@@ -113,7 +114,7 @@ const TacheNonAttribuer = () => {
 	);
 };
 
-export default TacheNonAttribuer;
+export default TacheFromGroup;
 
 const styles_items = StyleSheet.create({
 	containeur: {

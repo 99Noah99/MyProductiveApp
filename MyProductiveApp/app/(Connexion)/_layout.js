@@ -5,9 +5,6 @@ export default function _layout() {
 	return (
 		<Stack
 			screenOptions={{
-				headerStyle: {
-					backgroundColor: "#FFFAE4",
-				},
 				headerTintColor: "black",
 				flex: 1,
 				headerTitleStyle: {
