@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
 	const segments = useSegments();
 
 	useEffect(() => {
-		console.log(token);
 		if (!user && segments[0] === "(Protected)") {
 			router.push("");
 		} else if (

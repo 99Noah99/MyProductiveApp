@@ -9,6 +9,7 @@ import {
 	ImageBackground,
 	FlatList,
 	ActivityIndicator,
+	Dimensions,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import { useFocusEffect } from "expo-router";
@@ -30,6 +31,8 @@ const TDB = () => {
 	const [tacheActive, setTacheActive] = useState(true);
 	const [groupeActive, setGroupeActive] = useState(false);
 	const [DataGroupe, setDataGroupe] = useState(null);
+	const screenWidth = Dimensions.get("window").width;
+	const squareSize = (screenWidth - 10) / 2 - 10;
 	const { user, token } = useContext(AuthContext);
 
 	const tacheContainer = () => {
@@ -43,14 +46,22 @@ const TDB = () => {
 	};
 
 	const renderItem = ({ item }) => (
-		<View style={styles_items.containeur}>
+		<View
+			style={StyleSheet.compose(styles_items.containeur, {
+				width: squareSize,
+				height: squareSize,
+			})}
+		>
 			<ImageBackground
-				source={require("../../assets/images/modal_header1.jpg")}
+				source={require("../../assets/images/modal_header4.jpg")}
 				style={styles_items.image}
 			>
 				<Text style={styles_items.text_nom_groupe}>{item.Nom_Groupe}</Text>
 			</ImageBackground>
 			<Text style={styles_items.text_description}>{item.Description}</Text>
+			<Text style={styles_items.text_nb}>
+				Nombre de tâches :{item.nombre_taches}
+			</Text>
 		</View>
 	);
 
@@ -67,7 +78,7 @@ const TDB = () => {
 		})
 			.then((response) => {
 				if (response.data.status == true) {
-					// console.log("response du getGroupe TDB", response.data.groupes);
+					//console.log("response du getGroupe TDB", response.data.groupes);
 					setDataGroupe(response.data.groupes);
 				}
 			})
@@ -152,7 +163,7 @@ const TDB = () => {
 					renderItem={renderItem}
 					keyExtractor={keyExtractor}
 					numColumns={2}
-					// columnWrapperStyle={styles_items.colonne_flatlist}
+					columnWrapperStyle={styles_items.colonne_flatlist}
 					ListEmptyComponent={
 						<View
 							style={{
@@ -262,15 +273,26 @@ const styles = StyleSheet.create({
 
 const styles_items = StyleSheet.create({
 	containeur: {
-		flex: 1,
+		marginVertical: 10,
 		backgroundColor: "white",
-		width: "45%",
-		margin: 10,
-		aspectRatio: 1,
+		// width: "45%",
+		// margin: 10,
+		// aspectRatio: 1,
 		borderBlockColor: "black",
 		borderWidth: 0.4,
 		borderRadius: 10,
 		elevation: 5,
+		shadowColor: "#202020",
+		shadowOffset: {
+			width: 6,
+			height: 6,
+		},
+		shadowOpacity: 0.6,
+		shadowRadius: 4,
+	},
+
+	colonne_flatlist: {
+		justifyContent: "space-evenly",
 	},
 
 	image: {
@@ -287,10 +309,20 @@ const styles_items = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: "bold",
 		color: "white",
+		textShadowColor: "black", // Couleur de la bordure
+		textShadowRadius: 10, // Rayon de la bordure
 	},
 
 	text_description: {
 		marginTop: 10,
+		textAlign: "center",
+	},
+
+	text_nb: {
+		flex: 1,
+		fontSize: 16,
+		fontWeight: "700",
+		textAlignVertical: "center",
 		textAlign: "center",
 	},
 });

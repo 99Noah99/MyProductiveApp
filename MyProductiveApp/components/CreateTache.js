@@ -42,10 +42,7 @@ const CreateTache = () => {
 			})
 				.then((response) => {
 					if (response.data.status == true) {
-						console.log(
-							"response du getGroupe dropdown",
-							response.data.groupes
-						);
+						// console.log("response du getGroupe dropdown",response.data.groupes);
 						setDataGroupe((prevDataGroupe) => [
 							...prevDataGroupe, // Copie des données existantes
 							...response.data.groupes, // Ajout des nouvelles données à la fin

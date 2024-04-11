@@ -6,13 +6,16 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Groupes;
 use App\Models\Taches;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class TacheController extends Controller
 {
     public function getGroupes(Request $request){
-        $groupes = Groupes::where("Id_User", $request->user['Id_User'])->get();
-        return ['status' => true, 'groupes' => $groupes];      
+        $groupes = Groupes::select('*', DB::raw('(SELECT COUNT(*) FROM taches WHERE taches.Id_Groupe = groupes.Id_Groupe) as nombre_taches'))
+                    ->where("Id_User", $request->user['Id_User'])
+                    ->get();
+    return ['status' => true, 'groupes' => $groupes];      
     }
 
     public function getTaches(Request $request){
