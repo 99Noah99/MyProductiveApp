@@ -93,4 +93,16 @@ class TacheController extends Controller
         }
     }
 
+    public function deleteGroupe(Request $request){
+        Taches::where("Id_User", $request->user['Id_User'])
+        ->where("Id_Groupe", $request->groupe['Id_Groupe'])
+        ->delete();
+
+        Groupes::where("Id_User", $request->user['Id_User'])
+            ->where("Id_Groupe", $request->groupe['Id_Groupe'])
+            ->delete();
+
+        return ['status' => true]; 
+    }
+
 }

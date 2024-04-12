@@ -19,7 +19,6 @@ const TacheNonAttribuer = () => {
 	useFocusEffect(
 		React.useCallback(() => {
 			async function getTaches(user, token) {
-				console.log("ip :", API_URL);
 				await axios({
 					method: "post",
 					url: `${API_URL}/api/getTaches`,

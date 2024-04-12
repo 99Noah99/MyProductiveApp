@@ -7,20 +7,19 @@ import {
 	ActivityIndicator,
 } from "react-native";
 import React, { useState, useContext } from "react";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, Stack } from "expo-router";
 import { AuthContext } from "../../context/AuthProvider";
 import { API_URL } from "@env";
 import axios from "axios";
 
 const TacheFromGroup = () => {
 	const { user, token } = useContext(AuthContext);
-	const { Id_Groupe } = useLocalSearchParams();
+	const { Id_Groupe, Nom_Groupe } = useLocalSearchParams();
 	const [DataTache, setDataTache] = useState(null);
 
 	useFocusEffect(
 		React.useCallback(() => {
 			async function getTaches(user, token, Id_Groupe) {
-				console.log("ip :", API_URL);
 				await axios({
 					method: "post",
 					url: `${API_URL}/api/getTaches`,
@@ -90,6 +89,16 @@ const TacheFromGroup = () => {
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
+			<Stack.Screen
+				options={{
+					title: Nom_Groupe, // permet de changer le nom du header dynamiquement en fonction du groupe
+					headerStyle: { backgroundColor: "#f4511e" },
+					headerTintColor: "white",
+					headerTitleStyle: {
+						fontWeight: "bold",
+					},
+				}}
+			/>
 			{DataTache == null ? (
 				<ActivityIndicator size="large" color="black" />
 			) : (

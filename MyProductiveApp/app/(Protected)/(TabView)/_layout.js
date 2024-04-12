@@ -21,7 +21,7 @@ export default function _layout() {
 				<Tabs.Screen
 					name="TacheNonAttribuer"
 					options={{
-						title: "Tâche à attribuer",
+						title: "Tâches à attribuer",
 						headerTitleAlign: "center",
 						tabBarIcon: ({ color }) => (
 							<Entypo name="list" size={24} color={color} />

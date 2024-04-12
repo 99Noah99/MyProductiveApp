@@ -11,8 +11,9 @@ import {
 	ActivityIndicator,
 	Dimensions,
 	Pressable,
+	Alert,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useFocusEffect, router } from "expo-router";
 
 //Ajout de composant externe
@@ -33,6 +34,7 @@ const TDB = () => {
 	const [tacheActive, setTacheActive] = useState(true);
 	const [groupeActive, setGroupeActive] = useState(false);
 	const [DataGroupe, setDataGroupe] = useState(null);
+	const [IsRefresh, setIsRefresh] = useState(false);
 	const screenWidth = Dimensions.get("window").width;
 	const squareSize = (screenWidth - 10) / 2 - 10;
 
@@ -46,6 +48,32 @@ const TDB = () => {
 		setTacheActive(false);
 	};
 
+	const AlertSuppgroupe = (item) => {
+		Alert.alert(
+			"Suppression du Groupe",
+			`Voulez-vous vraiment supprimer le groupe ${item.Nom_Groupe} ainsi que ses tâches ?`,
+			[
+				{
+					text: "Annuler",
+					onPress: () => console.log("Cancel Pressed"),
+					style: "cancel",
+				},
+
+				{
+					text: "Supprimer",
+					onPress: () => {
+						deleteGroupe(user, token, item);
+						getGroupes(user, token);
+					},
+					style: "destructive",
+				},
+			],
+			{
+				cancelable: true, // Empêche de fermer l'alerte en appuyant en dehors de celle-ci ou en appuyant sur le bouton de retour
+			}
+		);
+	};
+
 	const renderItem = ({ item }) => (
 		<Pressable
 			onPress={() =>
@@ -53,9 +81,11 @@ const TDB = () => {
 					pathname: "../TacheFromGroup",
 					params: {
 						Id_Groupe: item.Id_Groupe,
+						Nom_Groupe: item.Nom_Groupe,
 					},
 				})
 			}
+			onLongPress={() => AlertSuppgroupe(item)}
 		>
 			<View
 				style={StyleSheet.compose(styles_items.containeur, {
@@ -101,12 +131,38 @@ const TDB = () => {
 			});
 	}
 
+	async function deleteGroupe(user, token, groupe) {
+		await axios({
+			method: "post",
+			url: `${API_URL}/api/deleteGroupe`,
+			headers: { Authorization: `Bearer ${token}` },
+			data: {
+				user: user,
+				groupe: groupe,
+			},
+		})
+			.then((response) => {
+				if (response.data.status == true) {
+					console.log(response.data);
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				console.log("erreur en JSON", error.toJSON());
+				console.log("catch error de l'alerte de suppresion");
+			});
+	}
+
 	//Execute fonction getGroupes à chaque ouverture de la page
 	useFocusEffect(
 		React.useCallback(() => {
 			getGroupes(user, token);
 		}, [])
 	);
+
+	useEffect(() => {
+		console.log("refresh:", IsRefresh);
+	}, [IsRefresh]);
 
 	return (
 		<SafeAreaView>
@@ -176,6 +232,13 @@ const TDB = () => {
 					keyExtractor={keyExtractor}
 					numColumns={2}
 					columnWrapperStyle={styles_items.colonne_flatlist}
+					refreshing={IsRefresh} // permet d'afficher le logo chargement
+					onRefresh={async () => {
+						// action lors du rafraichissement
+						setIsRefresh(true);
+						await getGroupes(user, token);
+						setIsRefresh(false);
+					}}
 					ListEmptyComponent={
 						<View
 							style={{
