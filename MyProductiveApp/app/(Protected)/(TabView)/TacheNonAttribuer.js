@@ -19,13 +19,14 @@ import axios from "axios";
 const TacheNonAttribuer = () => {
 	const { user, token } = useContext(AuthContext);
 	const [DataTache, setDataTache] = useState(null);
+	const [IsRefresh, setIsRefresh] = useState(false);
 	const swipeableRef = useRef(null); // Ref to access Swipeable methods
 	let row = [];
 	let prevOpenedRow;
 
+	//permet de "dé" swipe toute les taches qui ont précédement été swipe
 	useFocusEffect(
 		React.useCallback(() => {
-			console.log("le swipeableRef : ", swipeableRef);
 			return () => {
 				if (swipeableRef.current) {
 					swipeableRef.current.close(); // Close Swipeable when leaving the screen
@@ -36,39 +37,56 @@ const TacheNonAttribuer = () => {
 
 	useFocusEffect(
 		React.useCallback(() => {
-			async function getTaches(user, token) {
-				await axios({
-					method: "post",
-					url: `${API_URL}/api/getTaches`,
-					headers: { Authorization: `Bearer ${token}` },
-					data: {
-						user: user,
-					},
-				})
-					.then((response) => {
-						if (response.data.status == true) {
-							// console.log("response du getTaches", response.data.taches);
-							setDataTache(response.data.taches);
-						}
-					})
-					.catch((error) => {
-						console.log(error);
-						console.log("erreur en JSON", error.toJSON());
-						console.log("catch error du getTaches");
-					});
-			}
 			getTaches(user, token);
 			console.log("chargement des taches");
 		}, [])
 	);
 
-	// const handleSwipe = (swipeable) => {
-	// 	console.log("handleSwipe : ", swipeable);
-	// 	if (swipeableRef.current && swipeableRef.current !== swipeable) {
-	// 		swipeableRef.current.close(); // Close other Swipeable when opening a new one
-	// 	}
-	// 	swipeableRef.current = swipeable;
-	// };
+	// ----------------------------- FONCTIONS ---------------------------------//
+	async function getTaches(user, token) {
+		await axios({
+			method: "post",
+			url: `${API_URL}/api/getTaches`,
+			headers: { Authorization: `Bearer ${token}` },
+			data: {
+				user: user,
+			},
+		})
+			.then((response) => {
+				if (response.data.status == true) {
+					// console.log("response du getTaches", response.data.taches);
+					setDataTache(response.data.taches);
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				console.log("erreur en JSON", error.toJSON());
+				console.log("catch error du getTaches");
+			});
+	}
+
+	async function deleteTache(token, item) {
+		await axios({
+			method: "post",
+			url: `${API_URL}/api/deleteTache`,
+			headers: { Authorization: `Bearer ${token}` },
+			data: {
+				tache: item.Id_Tache,
+			},
+		})
+			.then((response) => {
+				if (response.data.status == true) {
+					console.log(response.data);
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				console.log("erreur en JSON", error.toJSON());
+				console.log("catch error delete Tache");
+			});
+	}
+
+	// ------------------------------------------------------------------------ //
 
 	// Design de chaque éléments du flatlist
 	const renderItem = ({ item }) => {
@@ -92,10 +110,9 @@ const TacheNonAttribuer = () => {
 					// Affecter la référence à row[index]
 					row[item.Id_Tache] = ref;
 				}}
-				renderRightActions={swipeButton}
+				renderRightActions={() => swipeButton(item)} // Passer item à la fonction swipeButton
 				friction={2}
 				onSwipeableOpen={() => closeRow(item)}
-				// overshootRight={false}
 			>
 				<View style={styles_items.containeur}>
 					<Text style={styles_items.text_intitule}>{item.Intitule}</Text>
@@ -137,9 +154,15 @@ const TacheNonAttribuer = () => {
 		);
 	};
 
-	const swipeButton = () => (
+	const swipeButton = (item) => (
 		<View style={styles_items.swipeContaineur}>
-			<TouchableOpacity style={styles_items.swipeBouton}>
+			<TouchableOpacity
+				style={styles_items.swipeBouton}
+				onPress={() => {
+					deleteTache(token, item);
+					getTaches(user, token);
+				}}
+			>
 				<AntDesign name="delete" size={32} color="red" />
 			</TouchableOpacity>
 			<TouchableOpacity>
@@ -160,6 +183,13 @@ const TacheNonAttribuer = () => {
 						data={DataTache}
 						renderItem={renderItem}
 						keyExtractor={keyExtractor}
+						refreshing={IsRefresh} // permet d'afficher le logo chargement
+						onRefresh={async () => {
+							// action lors du rafraichissement
+							setIsRefresh(true);
+							await getTaches(user, token);
+							setIsRefresh(false);
+						}}
 						ListEmptyComponent={
 							<View
 								style={{

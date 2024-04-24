@@ -105,4 +105,12 @@ class TacheController extends Controller
         return ['status' => true]; 
     }
 
+    public function deleteTache(Request $request){
+        Taches::where("Id_User", $request->user()->Id_User)
+        ->where("Id_Tache", $request->tache)
+        ->delete();
+
+        return ['status' => true, 'user id ' => $request->user()->Id_User]; 
+    }
+
 }

@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::post('/createTache', [TacheController::class, 'createTache']);
     Route::post('/createGroupe', [TacheController::class, 'createGroupe']);
     Route::post('/deleteGroupe', [TacheController::class, 'deleteGroupe']);
+    Route::post('/deleteTache', [TacheController::class, 'deleteTache']);
 
 });
 
