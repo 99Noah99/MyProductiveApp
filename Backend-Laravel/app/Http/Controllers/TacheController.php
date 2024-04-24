@@ -21,7 +21,7 @@ class TacheController extends Controller
     public function getTaches(Request $request){
         // Vérifie si la requête contient l'élément "groupes"
         if ($request->has('Id_Groupe')) {
-            $taches = Taches::where('Id_User', $request->user['Id_User']) ->where('Id_Groupe', $request->Id_Groupe)->get();
+            $taches = Taches::where('Id_User', $request->user()->Id_User) ->where('Id_Groupe', $request->Id_Groupe)->get();
             return ['status' => true, 'taches' => $taches]; 
         } else {
             $taches = Taches::where('Id_User', $request->user['Id_User']) ->where('Id_Groupe', null)->get();

@@ -14,7 +14,7 @@ import { TacheContext } from "../context/TacheProvider";
 import { API_URL } from "@env";
 import axios from "axios";
 
-const CreateTache = () => {
+const CreateTache = ({ getGroupes }) => {
 	const { setModalVisible } = useContext(TacheContext);
 	const [TacheIntitule, setTacheIntitule] = useState("");
 	const [DataGroupe, setDataGroupe] = useState([
@@ -58,10 +58,6 @@ const CreateTache = () => {
 	}, []);
 
 	async function createTache(user, token, TacheIntitule, statut, groupe) {
-		console.log("tache intitule : ", TacheIntitule);
-		console.log("statut : ", statut);
-		console.log("groupe : ", groupe);
-		console.log(!groupe);
 		if (!TacheIntitule || !statut || !groupe) {
 			Alert.alert("Champs requis", "Veuillez remplir tous les champs");
 			return;
@@ -79,8 +75,17 @@ const CreateTache = () => {
 			})
 				.then((response) => {
 					if (response.data.status == true) {
-						console.log(response.data);
-						setModalVisible(false);
+						if (groupe != -1) {
+							// si la tache est attribuer a un groupe on rerécupère les dataGroupes
+							console.log("ajout a un groupe");
+							setModalVisible(false);
+							getGroupes(user, token);
+						} else {
+							//cas ou le groupe n'est pas attribuer
+							console.log("non attribuer");
+							console.log(response.data);
+							setModalVisible(false);
+						}
 					} else {
 						// vérif si type de réponse est objet
 						if (

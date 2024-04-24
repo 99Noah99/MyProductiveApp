@@ -12,8 +12,9 @@ import {
 	Dimensions,
 	Pressable,
 	Alert,
+	Vibration,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useFocusEffect, router } from "expo-router";
 
 //Ajout de composant externe
@@ -49,6 +50,7 @@ const TDB = () => {
 	};
 
 	const AlertSuppgroupe = (item) => {
+		Vibration.vibrate(200);
 		Alert.alert(
 			"Suppression du Groupe",
 			`Voulez-vous vraiment supprimer le groupe ${item.Nom_Groupe} ainsi que ses tâches ?`,
@@ -160,10 +162,6 @@ const TDB = () => {
 		}, [])
 	);
 
-	useEffect(() => {
-		console.log("refresh:", IsRefresh);
-	}, [IsRefresh]);
-
 	return (
 		<SafeAreaView>
 			<Modal
@@ -215,7 +213,7 @@ const TDB = () => {
 									</View>
 								</View>
 
-								{tacheActive && <CreateTache />}
+								{tacheActive && <CreateTache getGroupes={getGroupes} />}
 
 								{groupeActive && <CreateGroupe getGroupes={getGroupes} />}
 							</View>

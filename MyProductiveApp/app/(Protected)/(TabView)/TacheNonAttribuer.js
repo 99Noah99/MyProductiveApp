@@ -5,16 +5,34 @@ import {
 	FlatList,
 	StyleSheet,
 	ActivityIndicator,
+	TouchableOpacity,
 } from "react-native";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { useFocusEffect } from "expo-router";
 import { AuthContext } from "../../../context/AuthProvider";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Swipeable from "react-native-gesture-handler/Swipeable";
+import { AntDesign } from "@expo/vector-icons";
 import { API_URL } from "@env";
 import axios from "axios";
 
 const TacheNonAttribuer = () => {
 	const { user, token } = useContext(AuthContext);
 	const [DataTache, setDataTache] = useState(null);
+	const swipeableRef = useRef(null); // Ref to access Swipeable methods
+	let row = [];
+	let prevOpenedRow;
+
+	useFocusEffect(
+		React.useCallback(() => {
+			console.log("le swipeableRef : ", swipeableRef);
+			return () => {
+				if (swipeableRef.current) {
+					swipeableRef.current.close(); // Close Swipeable when leaving the screen
+				}
+			};
+		}, [])
+	);
 
 	useFocusEffect(
 		React.useCallback(() => {
@@ -44,71 +62,119 @@ const TacheNonAttribuer = () => {
 		}, [])
 	);
 
+	// const handleSwipe = (swipeable) => {
+	// 	console.log("handleSwipe : ", swipeable);
+	// 	if (swipeableRef.current && swipeableRef.current !== swipeable) {
+	// 		swipeableRef.current.close(); // Close other Swipeable when opening a new one
+	// 	}
+	// 	swipeableRef.current = swipeable;
+	// };
+
 	// Design de chaque éléments du flatlist
-	const renderItem = ({ item }) => (
-		<View style={styles_items.containeur}>
-			<Text style={styles_items.text_intitule}>{item.Intitule}</Text>
-			{item.Statut == "urgent" ? (
-				<Text
-					style={StyleSheet.compose(styles_items.text_statut, {
-						backgroundColor: "#FF7171",
-					})}
-				>
-					{item.Statut}
-				</Text>
-			) : item.Statut === "important" ? (
-				<Text
-					style={StyleSheet.compose(styles_items.text_statut, {
-						backgroundColor: "#FFE3A2",
-					})}
-				>
-					{item.Statut}
-				</Text>
-			) : item.Statut === "moyen" ? (
-				<Text
-					style={StyleSheet.compose(styles_items.text_statut, {
-						backgroundColor: "#FFFF75",
-					})}
-				>
-					{item.Statut}
-				</Text>
-			) : (
-				<Text
-					style={StyleSheet.compose(styles_items.text_statut, {
-						backgroundColor: "#B4FFB8",
-					})}
-				>
-					{item.Statut}
-				</Text>
-			)}
+	const renderItem = ({ item }) => {
+		const closeRow = (item) => {
+			console.log("closeRow : ", prevOpenedRow);
+			if (prevOpenedRow && prevOpenedRow !== row[item.Id_Tache]) {
+				prevOpenedRow.close();
+			}
+			prevOpenedRow = row[item.Id_Tache];
+		};
+
+		return (
+			<Swipeable
+				ref={(ref) => {
+					// Appeler handleSwipe pour gérer la logique de fermeture
+					// console.log("le ref : ", ref);
+					if (swipeableRef.current && swipeableRef.current !== ref) {
+						swipeableRef.current.close(); // Close other Swipeable when opening a new one
+					}
+					swipeableRef.current = ref;
+					// Affecter la référence à row[index]
+					row[item.Id_Tache] = ref;
+				}}
+				renderRightActions={swipeButton}
+				friction={2}
+				onSwipeableOpen={() => closeRow(item)}
+				// overshootRight={false}
+			>
+				<View style={styles_items.containeur}>
+					<Text style={styles_items.text_intitule}>{item.Intitule}</Text>
+					{item.Statut == "urgent" ? (
+						<Text
+							style={StyleSheet.compose(styles_items.text_statut, {
+								backgroundColor: "#FF7171",
+							})}
+						>
+							{item.Statut}
+						</Text>
+					) : item.Statut === "important" ? (
+						<Text
+							style={StyleSheet.compose(styles_items.text_statut, {
+								backgroundColor: "#FFE3A2",
+							})}
+						>
+							{item.Statut}
+						</Text>
+					) : item.Statut === "moyen" ? (
+						<Text
+							style={StyleSheet.compose(styles_items.text_statut, {
+								backgroundColor: "#FFFF75",
+							})}
+						>
+							{item.Statut}
+						</Text>
+					) : (
+						<Text
+							style={StyleSheet.compose(styles_items.text_statut, {
+								backgroundColor: "#B4FFB8",
+							})}
+						>
+							{item.Statut}
+						</Text>
+					)}
+				</View>
+			</Swipeable>
+		);
+	};
+
+	const swipeButton = () => (
+		<View style={styles_items.swipeContaineur}>
+			<TouchableOpacity style={styles_items.swipeBouton}>
+				<AntDesign name="delete" size={32} color="red" />
+			</TouchableOpacity>
+			<TouchableOpacity>
+				<AntDesign name="addfolder" size={32} color="black" />
+			</TouchableOpacity>
 		</View>
 	);
 
 	const keyExtractor = (item) => item.Id_Tache.toString();
 
 	return (
-		<SafeAreaView>
-			{DataTache == null ? (
-				<ActivityIndicator size="large" color="black" />
-			) : (
-				<FlatList
-					data={DataTache}
-					renderItem={renderItem}
-					keyExtractor={keyExtractor}
-					ListEmptyComponent={
-						<View
-							style={{
-								flex: 1,
-								alignItems: "center",
-								justifyContent: "center",
-							}}
-						>
-							<Text>Aucune tâche à afficher</Text>
-						</View>
-					}
-				/>
-			)}
-		</SafeAreaView>
+		<GestureHandlerRootView>
+			<SafeAreaView>
+				{DataTache == null ? (
+					<ActivityIndicator size="large" color="black" />
+				) : (
+					<FlatList
+						data={DataTache}
+						renderItem={renderItem}
+						keyExtractor={keyExtractor}
+						ListEmptyComponent={
+							<View
+								style={{
+									flex: 1,
+									alignItems: "center",
+									justifyContent: "center",
+								}}
+							>
+								<Text>Aucune tâche à afficher</Text>
+							</View>
+						}
+					/>
+				)}
+			</SafeAreaView>
+		</GestureHandlerRootView>
 	);
 };
 
@@ -148,5 +214,15 @@ const styles_items = StyleSheet.create({
 		textAlignVertical: "center",
 		paddingHorizontal: 10,
 		paddingVertical: 5,
+	},
+
+	swipeContaineur: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginRight: 10,
+	},
+
+	swipeBouton: {
+		marginRight: 10,
 	},
 });
