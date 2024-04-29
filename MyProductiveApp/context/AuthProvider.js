@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }) => {
 			router.replace("/(Protected)/(TabView)/TDB");
 		}
 		console.log("reload du AuthProvider");
+		console.log("token du porvider ", token);
 	}, [user, segments]);
 
 	const varStorage = async (user, token) => {

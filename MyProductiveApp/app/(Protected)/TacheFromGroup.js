@@ -13,25 +13,25 @@ import { API_URL } from "@env";
 import axios from "axios";
 
 const TacheFromGroup = () => {
-	const { user, token } = useContext(AuthContext);
+	const { token } = useContext(AuthContext);
 	const { Id_Groupe, Nom_Groupe } = useLocalSearchParams();
 	const [DataTache, setDataTache] = useState(null);
 
 	useFocusEffect(
 		React.useCallback(() => {
-			async function getTaches(user, token, Id_Groupe) {
+			async function getTaches(token, Id_Groupe) {
 				await axios({
-					method: "post",
+					method: "get",
 					url: `${API_URL}/api/getTaches`,
 					headers: { Authorization: `Bearer ${token}` },
-					data: {
-						user: user,
+					params: {
 						Id_Groupe: Id_Groupe,
 					},
 				})
 					.then((response) => {
 						if (response.data.status == true) {
-							// console.log("response du getTaches", response.data.taches);
+							console.log(response.data.message);
+							console.log(response.data.taches);
 							setDataTache(response.data.taches);
 						}
 					})
@@ -41,7 +41,7 @@ const TacheFromGroup = () => {
 						console.log("catch error du getTaches");
 					});
 			}
-			getTaches(user, token, Id_Groupe);
+			getTaches(token, Id_Groupe);
 		}, [])
 	);
 

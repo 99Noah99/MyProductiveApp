@@ -31,14 +31,11 @@ const CreateTache = ({ getGroupes }) => {
 	const { user, token } = useContext(AuthContext);
 
 	useEffect(() => {
-		async function getGroupes(user, token) {
+		async function getGroupesForDropdown(token) {
 			await axios({
-				method: "post",
+				method: "get",
 				url: `${API_URL}/api/getGroupes`,
 				headers: { Authorization: `Bearer ${token}` },
-				data: {
-					user: user,
-				},
 			})
 				.then((response) => {
 					if (response.data.status == true) {
@@ -54,7 +51,7 @@ const CreateTache = ({ getGroupes }) => {
 					console.log("catch error du getGroupe Dropdown");
 				});
 		}
-		getGroupes(user, token);
+		getGroupesForDropdown(token);
 	}, []);
 
 	async function createTache(user, token, TacheIntitule, statut, groupe) {
@@ -79,7 +76,7 @@ const CreateTache = ({ getGroupes }) => {
 							// si la tache est attribuer a un groupe on rerécupère les dataGroupes
 							console.log("ajout a un groupe");
 							setModalVisible(false);
-							getGroupes(user, token);
+							getGroupes(token);
 						} else {
 							//cas ou le groupe n'est pas attribuer
 							console.log("non attribuer");

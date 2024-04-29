@@ -37,7 +37,7 @@ const CreateGroupe = ({ getGroupes }) => {
 					if (response.data.status == true) {
 						console.log(response.data);
 						// après l'ajout d'un nouveau groupe on récupère de nouveau tout les groupes
-						getGroupes(user, token);
+						getGroupes(token);
 
 						//on ferme le Modal
 						setModalVisible(false);

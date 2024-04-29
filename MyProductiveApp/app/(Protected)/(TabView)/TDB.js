@@ -30,8 +30,8 @@ import { API_URL } from "@env";
 import axios from "axios";
 
 const TDB = () => {
-	const { ModalVisible, setModalVisible } = useContext(TacheContext);
 	const { user, token } = useContext(AuthContext);
+	const { ModalVisible, setModalVisible } = useContext(TacheContext);
 	const [tacheActive, setTacheActive] = useState(true);
 	const [groupeActive, setGroupeActive] = useState(false);
 	const [DataGroupe, setDataGroupe] = useState(null);
@@ -49,6 +49,54 @@ const TDB = () => {
 		setTacheActive(false);
 	};
 
+	async function getGroupes(token) {
+		console.log("le token du get groupe", token);
+		await axios({
+			method: "get",
+			url: `${API_URL}/api/getGroupes`,
+			headers: { Authorization: `Bearer ${token}` },
+		})
+			.then((response) => {
+				if (response.data.status == true) {
+					setDataGroupe(response.data.groupes);
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				console.log("erreur en JSON", error.toJSON());
+				console.log("catch error du getGroupe Dropdown page TDB");
+			});
+	}
+
+	async function deleteGroupe(user, token, groupe) {
+		await axios({
+			method: "post",
+			url: `${API_URL}/api/deleteGroupe`,
+			headers: { Authorization: `Bearer ${token}` },
+			data: {
+				user: user,
+				groupe: groupe,
+			},
+		})
+			.then((response) => {
+				if (response.data.status == true) {
+					console.log(response.data);
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				console.log("erreur en JSON", error.toJSON());
+				console.log("catch error de l'alerte de suppresion");
+			});
+	}
+
+	//Execute fonction getGroupes à chaque ouverture de la page
+	useFocusEffect(
+		React.useCallback(() => {
+			getGroupes(token);
+		}, [])
+	);
+
 	const AlertSuppgroupe = (item) => {
 		Vibration.vibrate(200);
 		Alert.alert(
@@ -65,7 +113,7 @@ const TDB = () => {
 					text: "Supprimer",
 					onPress: () => {
 						deleteGroupe(user, token, item);
-						getGroupes(user, token);
+						getGroupes(token);
 					},
 					style: "destructive",
 				},
@@ -111,57 +159,6 @@ const TDB = () => {
 
 	const keyExtractor = (item) => item.Id_Groupe.toString();
 
-	async function getGroupes(user, token) {
-		await axios({
-			method: "post",
-			url: `${API_URL}/api/getGroupes`,
-			headers: { Authorization: `Bearer ${token}` },
-			data: {
-				user: user,
-			},
-		})
-			.then((response) => {
-				if (response.data.status == true) {
-					//console.log("response du getGroupe TDB", response.data.groupes);
-					setDataGroupe(response.data.groupes);
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-				console.log("erreur en JSON", error.toJSON());
-				console.log("catch error du getGroupe Dropdown page TDB");
-			});
-	}
-
-	async function deleteGroupe(user, token, groupe) {
-		await axios({
-			method: "post",
-			url: `${API_URL}/api/deleteGroupe`,
-			headers: { Authorization: `Bearer ${token}` },
-			data: {
-				user: user,
-				groupe: groupe,
-			},
-		})
-			.then((response) => {
-				if (response.data.status == true) {
-					console.log(response.data);
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-				console.log("erreur en JSON", error.toJSON());
-				console.log("catch error de l'alerte de suppresion");
-			});
-	}
-
-	//Execute fonction getGroupes à chaque ouverture de la page
-	useFocusEffect(
-		React.useCallback(() => {
-			getGroupes(user, token);
-		}, [])
-	);
-
 	return (
 		<SafeAreaView>
 			<Modal
@@ -182,7 +179,7 @@ const TDB = () => {
 								]}
 							>
 								<ImageBackground
-									source={require("../../../assets/images/modal_header2.jpg")}
+									source={require("../../../assets/images/modal_header4.jpg")}
 									style={styles.Modal_header}
 								>
 									<Text style={styles.Modal_header_text}>Créer</Text>
@@ -213,9 +210,11 @@ const TDB = () => {
 									</View>
 								</View>
 
+								{/* Contenu du modal  */}
 								{tacheActive && <CreateTache getGroupes={getGroupes} />}
 
 								{groupeActive && <CreateGroupe getGroupes={getGroupes} />}
+								{/* Fin contenu du modal  */}
 							</View>
 						</TouchableWithoutFeedback>
 					</View>
@@ -234,7 +233,7 @@ const TDB = () => {
 					onRefresh={async () => {
 						// action lors du rafraichissement
 						setIsRefresh(true);
-						await getGroupes(user, token);
+						await getGroupes(token);
 						setIsRefresh(false);
 					}}
 					ListEmptyComponent={
@@ -305,6 +304,8 @@ const styles = StyleSheet.create({
 		fontSize: 30,
 		color: "white",
 		fontWeight: "bold",
+		textShadowColor: "black", // Couleur de la bordure
+		textShadowRadius: 10, // Rayon de la bordure
 	},
 
 	container_choix: {

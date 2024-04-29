@@ -22,12 +22,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group( function () {
     Route::post('/logout', [UserController::class, 'logout']);
-    Route::post('/getGroupes', [TacheController::class, 'getGroupes']);
-    Route::post('/getTaches', [TacheController::class, 'getTaches']);
+    Route::get('/getGroupes', [TacheController::class, 'getGroupes']);
+    Route::get('/getTaches', [TacheController::class, 'getTaches']);
     Route::post('/createTache', [TacheController::class, 'createTache']);
     Route::post('/createGroupe', [TacheController::class, 'createGroupe']);
     Route::post('/deleteGroupe', [TacheController::class, 'deleteGroupe']);
     Route::post('/deleteTache', [TacheController::class, 'deleteTache']);
+    Route::post('/AssignTacheToGroupe', [TacheController::class, 'AssignTacheToGroupe']);
+    
 
 });
 

@@ -6,20 +6,36 @@ import {
 	StyleSheet,
 	ActivityIndicator,
 	TouchableOpacity,
+	Modal,
+	TouchableWithoutFeedback,
+	ImageBackground,
 } from "react-native";
 import React, { useState, useContext, useRef } from "react";
 import { useFocusEffect } from "expo-router";
-import { AuthContext } from "../../../context/AuthProvider";
+
+//import packages pour gestion du swipe
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
+
+//import Icones
 import { AntDesign } from "@expo/vector-icons";
+
+//Import outils requetes
 import { API_URL } from "@env";
 import axios from "axios";
 
+// Import des contextes
+import { AuthContext } from "../../../context/AuthProvider";
+
+//Ajout de composant externe
+import AssignTacheToGroupe from "../../../components/AssignTacheToGroupe";
+
 const TacheNonAttribuer = () => {
-	const { user, token } = useContext(AuthContext);
+	const { token } = useContext(AuthContext);
 	const [DataTache, setDataTache] = useState(null);
 	const [IsRefresh, setIsRefresh] = useState(false);
+	const [ModalVisible, setModalVisible] = useState(false);
+	const [TacheInfoForModal, setTacheInfoForModal] = useState(null);
 	const swipeableRef = useRef(null); // Ref to access Swipeable methods
 	let row = [];
 	let prevOpenedRow;
@@ -37,24 +53,20 @@ const TacheNonAttribuer = () => {
 
 	useFocusEffect(
 		React.useCallback(() => {
-			getTaches(user, token);
+			getTaches(token);
 			console.log("chargement des taches");
 		}, [])
 	);
 
 	// ----------------------------- FONCTIONS ---------------------------------//
-	async function getTaches(user, token) {
+	async function getTaches(token) {
 		await axios({
-			method: "post",
+			method: "get",
 			url: `${API_URL}/api/getTaches`,
 			headers: { Authorization: `Bearer ${token}` },
-			data: {
-				user: user,
-			},
 		})
 			.then((response) => {
 				if (response.data.status == true) {
-					// console.log("response du getTaches", response.data.taches);
 					setDataTache(response.data.taches);
 				}
 			})
@@ -91,7 +103,6 @@ const TacheNonAttribuer = () => {
 	// Design de chaque éléments du flatlist
 	const renderItem = ({ item }) => {
 		const closeRow = (item) => {
-			console.log("closeRow : ", prevOpenedRow);
 			if (prevOpenedRow && prevOpenedRow !== row[item.Id_Tache]) {
 				prevOpenedRow.close();
 			}
@@ -160,12 +171,17 @@ const TacheNonAttribuer = () => {
 				style={styles_items.swipeBouton}
 				onPress={() => {
 					deleteTache(token, item);
-					getTaches(user, token);
+					getTaches(token);
 				}}
 			>
 				<AntDesign name="delete" size={32} color="red" />
 			</TouchableOpacity>
-			<TouchableOpacity>
+			<TouchableOpacity
+				onPress={() => {
+					setTacheInfoForModal(item);
+					setModalVisible(true);
+				}}
+			>
 				<AntDesign name="addfolder" size={32} color="black" />
 			</TouchableOpacity>
 		</View>
@@ -176,6 +192,43 @@ const TacheNonAttribuer = () => {
 	return (
 		<GestureHandlerRootView>
 			<SafeAreaView>
+				<Modal
+					visible={ModalVisible}
+					onRequestClose={() => setModalVisible(false)}
+					onBackdropPress={() => setModalVisible(false)}
+					animationType="slide"
+					transparent={true}
+				>
+					<TouchableWithoutFeedback onPressOut={() => setModalVisible(false)}>
+						<View style={styles_Modal.Modal_position}>
+							<TouchableWithoutFeedback>
+								<View
+									style={[
+										styles_Modal.Modal_contenu,
+										styles_Modal.Modal_Shadow_android,
+										styles_Modal.Modal_Shadow_ios,
+									]}
+								>
+									<ImageBackground
+										source={require("../../../assets/images/modal_header4.jpg")}
+										style={styles_Modal.Modal_header}
+									>
+										<Text style={styles_Modal.Modal_header_text}>
+											Attribuer la Tâche
+										</Text>
+									</ImageBackground>
+
+									{/* Contenu du modal  */}
+									<AssignTacheToGroupe
+										tache_info={TacheInfoForModal}
+										setModalVisible={setModalVisible}
+										getTaches={getTaches}
+									/>
+								</View>
+							</TouchableWithoutFeedback>
+						</View>
+					</TouchableWithoutFeedback>
+				</Modal>
 				{DataTache == null ? (
 					<ActivityIndicator size="large" color="black" />
 				) : (
@@ -187,7 +240,7 @@ const TacheNonAttribuer = () => {
 						onRefresh={async () => {
 							// action lors du rafraichissement
 							setIsRefresh(true);
-							await getTaches(user, token);
+							await getTaches(token);
 							setIsRefresh(false);
 						}}
 						ListEmptyComponent={
@@ -254,5 +307,59 @@ const styles_items = StyleSheet.create({
 
 	swipeBouton: {
 		marginRight: 10,
+	},
+});
+
+const styles_Modal = StyleSheet.create({
+	Modal_position: {
+		flex: 1,
+		flexDirection: "column",
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "rgba(255, 255, 255, 0.6)", // blanc avec 50% d'opacité
+	},
+
+	Modal_contenu: {
+		flexDirection: "column",
+		alignItems: "flex-start",
+		backgroundColor: "white",
+		width: 330,
+		height: 280,
+		borderRadius: 15,
+		alignItems: "center",
+	},
+
+	Modal_Shadow_ios: {
+		shadowColor: "#202020",
+		shadowOffset: {
+			width: 6,
+			height: 6,
+		},
+		shadowOpacity: 0.6,
+		shadowRadius: 4,
+	},
+
+	Modal_Shadow_android: {
+		elevation: 12,
+		shadowColor: "#202020",
+	},
+
+	Modal_header: {
+		width: "100%",
+		height: 50,
+		overflow: "hidden",
+		resizeMode: "repeat",
+		borderTopLeftRadius: 15,
+		borderTopRightRadius: 15,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+
+	Modal_header_text: {
+		fontSize: 30,
+		fontWeight: "bold",
+		color: "white",
+		textShadowColor: "black", // Couleur de la bordure
+		textShadowRadius: 10, // Rayon de la bordure
 	},
 });
