@@ -17,32 +17,35 @@ const TacheFromGroup = () => {
 	const { Id_Groupe, Nom_Groupe } = useLocalSearchParams();
 	const [DataTache, setDataTache] = useState(null);
 
+	async function getTaches(token, Id_Groupe) {
+		await axios({
+			method: "get",
+			url: `${API_URL}/api/getTaches`,
+			headers: { Authorization: `Bearer ${token}` },
+			params: {
+				Id_Groupe: Id_Groupe,
+			},
+		})
+			.then((response) => {
+				if (response.data.status == true) {
+					console.log(response.data.message);
+					console.log(response.data.taches);
+					setDataTache(response.data.taches);
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				console.log("erreur en JSON", error.toJSON());
+				console.log("catch error du getTaches");
+			});
+	}
+
 	useFocusEffect(
 		React.useCallback(() => {
-			async function getTaches(token, Id_Groupe) {
-				await axios({
-					method: "get",
-					url: `${API_URL}/api/getTaches`,
-					headers: { Authorization: `Bearer ${token}` },
-					params: {
-						Id_Groupe: Id_Groupe,
-					},
-				})
-					.then((response) => {
-						if (response.data.status == true) {
-							console.log(response.data.message);
-							console.log(response.data.taches);
-							setDataTache(response.data.taches);
-						}
-					})
-					.catch((error) => {
-						console.log(error);
-						console.log("erreur en JSON", error.toJSON());
-						console.log("catch error du getTaches");
-					});
+			if (token) {
+				getTaches(token, Id_Groupe);
 			}
-			getTaches(token, Id_Groupe);
-		}, [])
+		}, [token])
 	);
 
 	// Design de chaque éléments du flatlist

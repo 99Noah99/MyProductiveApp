@@ -131,10 +131,23 @@ class TacheController extends Controller
     }
 
     public function AssignTacheToGroupe(Request $request){
-        Taches::where("Id_Tache", $request->Tache["Id_Tache"])
-            ->update(["Id_Groupe" => $request->groupe]);
-        return ['status' => true, 'message' => 'La tâche a été assignée à un groupe avec succès.'];
-
+        try {
+            // Validation des données d'entrée
+            $request->validate([
+                'Tache.Id_Tache' => 'required', // Assurez-vous que l'Id_Tache est présent
+                'groupe' => 'required', // Assurez-vous que le groupe est présent
+            ]);
+    
+            // Attribution de la tâche avec l'identifiant du groupe
+            Taches::where("Id_Tache", $request->Tache["Id_Tache"])
+                ->update(["Id_Groupe" => $request->groupe]);
+            
+            // Succès
+            return ['status' => true, 'message' => 'La tâche a été assignée à un groupe avec succès.'];
+        } catch (\Exception $e) {
+            // Gestion des exceptions
+            return ['status' => false, 'message' => 'Une erreur est survenue lors de l\'assignation de la tâche au groupe. Veuillez réessayer plus tard.', 'error' => $e->getMessage()];
+        }
     }
 
 }

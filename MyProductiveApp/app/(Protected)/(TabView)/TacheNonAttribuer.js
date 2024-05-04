@@ -53,9 +53,11 @@ const TacheNonAttribuer = () => {
 
 	useFocusEffect(
 		React.useCallback(() => {
-			getTaches(token);
+			if (token) {
+				getTaches(token);
+			}
 			console.log("chargement des taches");
-		}, [])
+		}, [token])
 	);
 
 	// ----------------------------- FONCTIONS ---------------------------------//

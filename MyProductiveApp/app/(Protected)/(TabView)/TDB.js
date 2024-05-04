@@ -93,10 +93,11 @@ const TDB = () => {
 	//Execute fonction getGroupes à chaque ouverture de la page
 	useFocusEffect(
 		React.useCallback(() => {
-			getGroupes(token);
-		}, [])
+			if (token) {
+				getGroupes(token);
+			}
+		}, [token])
 	);
-
 	const AlertSuppgroupe = (item) => {
 		Vibration.vibrate(200);
 		Alert.alert(
