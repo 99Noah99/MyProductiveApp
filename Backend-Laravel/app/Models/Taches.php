@@ -9,16 +9,18 @@ class Taches extends Model
 {
     use HasFactory;
 
-    protected $table = 'Taches';
+    protected $table = 'taches';
     protected $primaryKey = 'Id_Tache';
 
     protected $guarded = []; // Ne protège aucune colonne, permet le create
 
-    public function User(){        
+    public function User()
+    {
         return $this->belongsTo(User::class, 'Id_User', 'Id_User');
     }
 
-    public function Groupes(){        
+    public function Groupes()
+    {
         return $this->belongsTo(Groupes::class, 'Id_Groupe', 'Id_Groupe');
     }
 }

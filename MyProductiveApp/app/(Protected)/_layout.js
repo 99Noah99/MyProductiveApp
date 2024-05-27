@@ -9,3 +9,5 @@ export default function _layout() {
 		</Stack>
 	);
 }
+
+// style du TacheFromGroup présent dans le fichier TacheFromGroup car besoin du nom de header en variable

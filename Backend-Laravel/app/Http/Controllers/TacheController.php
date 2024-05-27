@@ -14,51 +14,56 @@ use Illuminate\Support\Facades\Log;
 
 class TacheController extends Controller
 {
-    public function getGroupes(Request $request){
+    public function getGroupes(Request $request)
+    {
         $groupes = Groupes::select('*', DB::raw('(SELECT COUNT(*) FROM taches WHERE taches.Id_Groupe = groupes.Id_Groupe) as nombre_taches'))
-                    ->where("Id_User", $request->user()->Id_User)
-                    ->get();
-    return ['status' => true, 'groupes' => $groupes];      
+            ->where("Id_User", $request->user()->Id_User)
+            ->get();
+        return ['status' => true, 'groupes' => $groupes];
     }
 
-    public function getTaches(Request $request){
+    public function getTaches(Request $request)
+    {
         // Vérifie si la requête contient l'élément "groupes"
         if ($request->has('Id_Groupe')) {
-            $taches = Taches::where('Id_User', $request->user()->Id_User) ->where('Id_Groupe', $request->Id_Groupe)->get();
-            return ['status' => true, 'taches' => $taches, 'message' => 'cic']; 
+            $taches = Taches::where('Id_User', $request->user()->Id_User)->where('Id_Groupe', $request->Id_Groupe)->get();
+            return ['status' => true, 'taches' => $taches];
         } else {
-            $taches = Taches::where('Id_User', $request->user()->Id_User) ->where('Id_Groupe', null)->get();
-            return ['status' => true, 'taches' => $taches, 'message' => 'pas bon']; 
+            $taches = Taches::where('Id_User', $request->user()->Id_User)->where('Id_Groupe', null)->get();
+            return ['status' => true, 'taches' => $taches, 'message' => 'pas bon'];
         }
     }
 
-    public function createTache(Request $request){
-        $validator = Validator::make($request->all(), [
-            'TacheIntitule' => 'required|string',
-            'statut' => 'required|string',
-            'groupe' => 'required|int',           
-        ],
-        [
-            'TacheIntitule.required' => "L'intitulé de la tâche est requis",
-            'statut.required' => 'Le status de la tâche est requis',
-            'groupe.required' => "Veuillez choisir d'attribuer ou non la tâche",
-        ]);
+    public function createTache(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'TacheIntitule' => 'required|string',
+                'statut' => 'required|string',
+                'groupe' => 'required|int',
+            ],
+            [
+                'TacheIntitule.required' => "L'intitulé de la tâche est requis",
+                'statut.required' => 'Le status de la tâche est requis',
+                'groupe.required' => "Veuillez choisir d'attribuer ou non la tâche",
+            ]
+        );
 
         if ($validator->fails()) {
-            return ['message_erreur' => $validator->messages(), 
-                    'status' => false
-                ];
-        }
-        elseif ($request->groupe == -1){
+            return [
+                'message_erreur' => $validator->messages(),
+                'status' => false
+            ];
+        } elseif ($request->groupe == -1) {
             Taches::create([
                 "Intitule" => $request->TacheIntitule,
                 "Statut" => $request->statut,
                 "Date_Ajout" => Carbon::now(),
                 "Id_User" => $request->user['Id_User'],
             ]);
-            return ['status' => true];   
-        }
-        else{
+            return ['status' => true];
+        } else {
             Taches::create([
                 "Intitule" => $request->TacheIntitule,
                 "Statut" => $request->statut,
@@ -66,54 +71,60 @@ class TacheController extends Controller
                 "Id_User" => $request->user['Id_User'],
                 "Id_Groupe" => $request->groupe
             ]);
-            return ['status' => true];   
+            return ['status' => true];
         }
     }
 
 
-    public function createGroupe(Request $request){
-        $validator = Validator::make($request->all(), [
-            'Nom_Groupe' => 'required|string',
-            'Description' => 'required|string',          
-        ],
-        [
-            'Nom_Groupe.required' => "Le nom du groupe est requis !",
-            'Description.required' => "La Description du groupe est requise !",
-        ]);
+    public function createGroupe(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'Nom_Groupe' => 'required|string',
+                'Description' => 'required|string',
+            ],
+            [
+                'Nom_Groupe.required' => "Le nom du groupe est requis !",
+                'Description.required' => "La Description du groupe est requise !",
+            ]
+        );
 
         if ($validator->fails()) {
-            return ['message_erreur' => $validator->messages(), 
-                    'status' => false
-                ];
-        }
-        else{
+            return [
+                'message_erreur' => $validator->messages(),
+                'status' => false
+            ];
+        } else {
             Groupes::create([
                 "Nom_Groupe" => $request->Nom_Groupe,
                 "Description" => $request->Description,
                 "Id_User" => $request->user['Id_User'],
             ]);
-            return ['status' => true];   
+            return ['status' => true];
         }
     }
 
-    public function deleteGroupe(Request $request){
+    public function deleteGroupe(Request $request)
+    {
         Taches::where("Id_User", $request->user['Id_User'])
-        ->where("Id_Groupe", $request->groupe['Id_Groupe'])
-        ->delete();
+            ->where("Id_Groupe", $request->groupe['Id_Groupe'])
+            ->delete();
 
         Groupes::where("Id_User", $request->user['Id_User'])
             ->where("Id_Groupe", $request->groupe['Id_Groupe'])
             ->delete();
 
-        return ['status' => true]; 
+        return ['status' => true];
     }
 
-    public function deleteTache(Request $request){
+    public function deleteTache(Request $request)
+    {
         try {
             $affectedRows = Taches::where("Id_User", $request->user()->Id_User)
                 ->where("Id_Tache", $request->tache)
                 ->delete();
-    
+
             if ($affectedRows > 0) {
                 return ['status' => true, 'message' => 'La tâche a été supprimée avec succès.'];
             } else {
@@ -130,18 +141,19 @@ class TacheController extends Controller
         }
     }
 
-    public function AssignTacheToGroupe(Request $request){
+    public function AssignTacheToGroupe(Request $request)
+    {
         try {
             // Validation des données d'entrée
             $request->validate([
                 'Tache.Id_Tache' => 'required', // Assurez-vous que l'Id_Tache est présent
                 'groupe' => 'required', // Assurez-vous que le groupe est présent
             ]);
-    
+
             // Attribution de la tâche avec l'identifiant du groupe
             Taches::where("Id_Tache", $request->Tache["Id_Tache"])
                 ->update(["Id_Groupe" => $request->groupe]);
-            
+
             // Succès
             return ['status' => true, 'message' => 'La tâche a été assignée à un groupe avec succès.'];
         } catch (\Exception $e) {
@@ -149,5 +161,4 @@ class TacheController extends Controller
             return ['status' => false, 'message' => 'Une erreur est survenue lors de l\'assignation de la tâche au groupe. Veuillez réessayer plus tard.', 'error' => $e->getMessage()];
         }
     }
-
 }

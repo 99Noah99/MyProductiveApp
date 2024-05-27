@@ -80,7 +80,8 @@ const TDB = () => {
 		})
 			.then((response) => {
 				if (response.data.status == true) {
-					console.log(response.data);
+					console.log("groupe supprimer");
+					getGroupes(token);
 				}
 			})
 			.catch((error) => {
@@ -114,7 +115,6 @@ const TDB = () => {
 					text: "Supprimer",
 					onPress: () => {
 						deleteGroupe(user, token, item);
-						getGroupes(token);
 					},
 					style: "destructive",
 				},

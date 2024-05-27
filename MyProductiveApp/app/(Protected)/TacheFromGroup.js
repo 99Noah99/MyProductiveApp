@@ -5,6 +5,7 @@ import {
 	FlatList,
 	StyleSheet,
 	ActivityIndicator,
+	ImageBackground,
 } from "react-native";
 import React, { useState, useContext } from "react";
 import { useFocusEffect, useLocalSearchParams, Stack } from "expo-router";
@@ -28,7 +29,6 @@ const TacheFromGroup = () => {
 		})
 			.then((response) => {
 				if (response.data.status == true) {
-					console.log(response.data.message);
 					console.log(response.data.taches);
 					setDataTache(response.data.taches);
 				}
@@ -95,7 +95,15 @@ const TacheFromGroup = () => {
 			<Stack.Screen
 				options={{
 					title: Nom_Groupe, // permet de changer le nom du header dynamiquement en fonction du groupe
-					headerStyle: { backgroundColor: "#f4511e" },
+					headerBackground: () => (
+						<ImageBackground
+							source={require("../../assets/images/modal_header4.jpg")}
+							style={{
+								flex: 1,
+								width: "100%",
+							}}
+						/>
+					),
 					headerTintColor: "white",
 					headerTitleStyle: {
 						fontWeight: "bold",

@@ -90,7 +90,8 @@ const TacheNonAttribuer = () => {
 		})
 			.then((response) => {
 				if (response.data.status == true) {
-					console.log(response.data);
+					console.log("tache supprime" + response.data);
+					getTaches(token);
 				}
 			})
 			.catch((error) => {
@@ -173,7 +174,6 @@ const TacheNonAttribuer = () => {
 				style={styles_items.swipeBouton}
 				onPress={() => {
 					deleteTache(token, item);
-					getTaches(token);
 				}}
 			>
 				<AntDesign name="delete" size={32} color="red" />
